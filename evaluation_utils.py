@@ -5,7 +5,12 @@ Based on: https://www.kaggle.com/aroraaman/quadratic-kappa-metric-explained-in-5
 """
 
 import numpy as np
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, cohen_kappa_score
+
+
+def sklearn_quadratic_kappa(actuals, predictions, num_buckets=5):
+    """Sklearn implementation of quadratic kappa"""
+    return cohen_kappa_score(actuals, predictions, labels=[x for x in range(num_buckets)], weights='quadratic')
 
 
 def quadratic_kappa(actuals, predictions, num_buckets=5):
@@ -51,5 +56,7 @@ if __name__ == '__main__':
     # simple test
     acts = np.array([4, 4, 3, 4, 4, 4, 1, 1, 2, 1])
     preds = np.array([0, 2, 1, 0, 0, 0, 1, 1, 2, 1])
-    assert quadratic_kappa(acts, preds) == -0.139240506329114, 'Test failed, quadratic kappa is broken!'
+    assert round(quadratic_kappa(acts, preds), 15) == -0.139240506329114, 'Test failed, quadratic kappa is broken!'
+    assert round(sklearn_quadratic_kappa(acts, preds), 15) == -0.139240506329114, 'Test failed, quadratic kappa from' \
+                                                                                  ' sklearn is broken!'
 
